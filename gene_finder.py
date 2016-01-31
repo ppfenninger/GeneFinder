@@ -29,6 +29,10 @@ def get_complement(nucleotide):
     'T'
     >>> get_complement('C')
     'G'
+    >>> get_complement('G')
+    'C'
+    >>> get_complement('T')
+    'A'
     """
     if nucleotide == 'A':
         return 'T'
@@ -51,14 +55,17 @@ def get_reverse_complement(dna):
     'AAAGCGGGCAT'
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
+    >>> get_reverse_complement("ATTCGAGT")
+    'ACTCGAAT'
     """
-    for letter in dna:
-        letter = get_complement(letter)
+    dna2 = ''
+    for i in range(len(dna)):
+        dna2 = dna2 + get_complement(dna[i])
 
-    index = len(dna) - 1
+    index = len(dna2) - 1
     reverse_dna = ''
     while index >= 0:
-        reverse_dna = reverse_dna + dna[index]
+        reverse_dna = reverse_dna + dna2[index]
         index = index - 1
     return reverse_dna
     pass
@@ -76,6 +83,8 @@ def rest_of_ORF(dna):
     'ATG'
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
+    >>> rest_of_ORF("ATGGGCCCCAAATAA")
+    'ATGGGCCCCAAA'
     """
     new_dna = ''
 
@@ -107,11 +116,13 @@ def find_all_ORFs_oneframe(dna):
         returns: a list of non-nested ORFs
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
+    >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGAAAAAAATGTGCCC")
+    ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
     index = 0
     new_dna = ''
     dna_list = []
-    while index > len(dna) - 2:
+    while index < len(dna) - 2:
         codon = dna[index] + dna[index + 1] + dna[index + 2]
 
         if codon == 'ATG':
@@ -140,6 +151,8 @@ def find_all_ORFs(dna):
 
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
+    >>> find_all_ORFs("")
+    []
     """
     frame1 = dna
     frame2 = dna[1: len(dna)]
@@ -164,6 +177,8 @@ def find_all_ORFs_both_strands(dna):
         returns: a list of non-nested ORFs
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
+    >>> find_all_ORFs_both_strands("")
+    []
     """
     strand1 = dna 
     strand2 = get_reverse_complement(dna)
@@ -239,11 +254,11 @@ def coding_strand_to_AA(dna):
 
         if codon == 'TTT' or codon == 'TTC':
             protein = protein + 'F' # Phenylalanine
-        elif codon == 'TTA' or codon == 'TTG' or codon = 'CTT' or codon == 'CTA' or codon == 'CTG' or codon == 'CTC':
+        elif codon == 'TTA' or codon == 'TTG' or codon == 'CTT' or codon == 'CTA' or codon == 'CTG' or codon == 'CTC':
             protein = protein + 'L' # Leucine
         elif codon == 'ATC' or codon == 'ATA' or codon == 'ATT':
             protein = protein + 'I' # Isoleucine
-        elif codon == 'GTG' or codon == 'GTT' or codon == 'GTA' or codon = 'GTC':
+        elif codon == 'GTG' or codon == 'GTT' or codon == 'GTA' or codon == 'GTC':
             protein = protein + 'V' # Valine
         elif codon == 'ATG': 
             protein = protein + 'M' # Methionine (start codon)
@@ -275,7 +290,7 @@ def coding_strand_to_AA(dna):
             protein = protein + 'D' # Aspartic acid
         elif codon == 'AAA' or codon == 'AAG':
             protein = protein + 'K' # Lysine
-        elif codon2 = 'CG' or codon  == 'AGA' or codon == 'AGG':
+        elif codon2 == 'CG' or codon  == 'AGA' or codon == 'AGG':
             protein = protein + 'R' # Arginine 
 
     return protein
@@ -294,4 +309,4 @@ def gene_finder(dna):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod()
+    doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose = True)
