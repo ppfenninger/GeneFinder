@@ -2,7 +2,7 @@
 """
 YOUR HEADER COMMENT HERE
 
-@author: YOUR NAME HERE
+@author: Paige Pfenninger
 
 """
 
@@ -30,7 +30,14 @@ def get_complement(nucleotide):
     >>> get_complement('C')
     'G'
     """
-    # TODO: implement this
+    if nucleotide == 'A':
+        return 'T'
+    elif nucleotide == 'T':
+        return 'A'
+    elif nucleotide == 'C':
+        return 'G'
+    else: # nucleotide == 'G'
+        return 'C'
     pass
 
 
@@ -45,7 +52,15 @@ def get_reverse_complement(dna):
     >>> get_reverse_complement("CCGCGTTCA")
     'TGAACGCGG'
     """
-    # TODO: implement this
+    for letter in dna:
+        letter = get_complement(letter)
+
+    index = len(dna) - 1
+    reverse_dna = ''
+    while index >= 0:
+        reverse_dna = reverse_dna + dna[index]
+        index = index - 1
+    return reverse_dna
     pass
 
 
@@ -62,7 +77,21 @@ def rest_of_ORF(dna):
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
     """
-    # TODO: implement this
+    new_dna = ''
+
+    index = 0
+
+    while index < len(dna) - 2:
+        codon = dna[index] + dna[index + 1] + dna[index + 2]
+
+        if codon == 'TAA' or codon == 'TAG' or codon == 'TGA': 
+            return new_dna
+        else: #codon is not a stop codon
+            new_dna = new_dna + codon
+
+        index = index + 3
+    
+    return dna #only happens if there is no stop codon 
     pass
 
 
@@ -79,7 +108,23 @@ def find_all_ORFs_oneframe(dna):
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
-    # TODO: implement this
+    index = 0
+    new_dna = ''
+    dna_list = []
+    while index > len(dna) - 2:
+        codon = dna[index] + dna[index + 1] + dna[index + 2]
+
+        if codon == 'ATG':
+            new_dna = dna[index: len(dna)] #gets a string of dna that begins with a start codon and extends to the end of the dna string
+            cut_dna = rest_of_ORF(new_dna) #cuts dna at stop codon
+
+            dna_list.append(cut_dna) #adds dna to the list of ORF
+
+            index = index + len(cut_dna) + 3
+        else:
+            index = index + 3
+
+    return dna_list
     pass
 
 
@@ -96,7 +141,18 @@ def find_all_ORFs(dna):
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
-    # TODO: implement this
+    frame1 = dna
+    frame2 = dna[1: len(dna)]
+    frame3 = dna[2: len(dna)]
+
+    orf = []
+
+    orf.extend(find_all_ORFs_oneframe(frame1)) #adds the ORF in frame one to the complete list of ORF
+    orf.extend(find_all_ORFs_oneframe(frame2)) #adds the ORF in frame two to the complete list of ORF
+    orf.extend(find_all_ORFs_oneframe(frame3)) #adds the ORF in frame three to the complete list of ORF
+
+    return orf
+
     pass
 
 
@@ -109,7 +165,14 @@ def find_all_ORFs_both_strands(dna):
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
-    # TODO: implement this
+    strand1 = dna 
+    strand2 = get_reverse_complement(dna)
+
+    orf = []
+    orf.extend(find_all_ORFs(strand1)) # adds the ORF in strand one to the complete list of ORF
+    orf.extend(find_all_ORFs(strand2)) # adds the ORF in strand two to the complete list of ORF
+
+    return orf
     pass
 
 
@@ -119,9 +182,16 @@ def longest_ORF(dna):
     >>> longest_ORF("ATGCGAATGTAGCATCAAA")
     'ATGCTACATTCGCAT'
     """
-    # TODO: implement this
-    pass
+    length = 0
+    longest = ''
+    orf = find_all_ORFs_both_strands(dna)
+    for element in orf:
+        if len(element) > length:
+            longest = element
+            length = len(element)
 
+    return longest
+    pass
 
 def longest_ORF_noncoding(dna, num_trials):
     """ Computes the maximum length of the longest ORF over num_trials shuffles
@@ -130,7 +200,19 @@ def longest_ORF_noncoding(dna, num_trials):
         dna: a DNA sequence
         num_trials: the number of random shuffles
         returns: the maximum length longest ORF """
-    # TODO: implement this
+    i = 1
+    max_length = 0
+    while i <= num_trials:
+        new_dna = shuffle_string(dna) #shuffles dna
+        l = longest_ORF(new_dna) #l is the longest orf in the shuffeled dna 
+
+        if len(l) > max_length:
+            max_length = len(l)
+
+        i = i + 1
+
+    return max_length
+
     pass
 
 
@@ -148,7 +230,56 @@ def coding_strand_to_AA(dna):
         >>> coding_strand_to_AA("ATGCCCGCTTT")
         'MPA'
     """
-    # TODO: implement this
+    index = 0
+    protein = ''
+
+    while index > len(dna) - 2:
+        codon = dna[index] + dna[index + 1] + dna[index + 2]
+        codon2 = dna[index] + dna[index + 1]
+
+        if codon == 'TTT' or codon == 'TTC':
+            protein = protein + 'F' # Phenylalanine
+        elif codon == 'TTA' or codon == 'TTG' or codon = 'CTT' or codon == 'CTA' or codon == 'CTG' or codon == 'CTC':
+            protein = protein + 'L' # Leucine
+        elif codon == 'ATC' or codon == 'ATA' or codon == 'ATT':
+            protein = protein + 'I' # Isoleucine
+        elif codon == 'GTG' or codon == 'GTT' or codon == 'GTA' or codon = 'GTC':
+            protein = protein + 'V' # Valine
+        elif codon == 'ATG': 
+            protein = protein + 'M' # Methionine (start codon)
+        elif codon == 'TGT' or codon == 'TGC':
+            protein = protein + 'C' # Cysteine
+        elif codon == 'GCT' or codon == 'GCC' or codon == 'GCA' or codon == 'GCG':
+            protein = protein + 'A' # Alanine
+        elif codon2 == 'GG':
+            protein = 'G' # Glycine
+        elif codon2 == 'CC':
+            protein = protein + 'P' # Proline
+        elif codon2 == 'AC':
+            protein = protein + 'T' # Threonine
+        elif codon2 == 'TC' or codon == 'AGT' or codon == 'AGC':
+            protein = protein + 'S' # Serine
+        elif codon == 'TAT' or codon == 'TAC':
+            protein = protein + 'Y' # Tyrosine
+        elif codon == 'TGG':
+            protein = protein + 'W' # Tryptophan
+        elif codon == 'CAA' or codon == 'CAG':
+            protein = protein + 'Q' # Glutamine
+        elif codon == 'AAT' or codon == 'AAC':
+            protein = protein + 'N' # Asparagine
+        elif codon == 'CAT' or codon == 'CAC':
+            protein = protein + 'H' # Histidine
+        elif codon == 'GAA' or codon == 'GAG':
+            protein = protein + 'E' # Glutamic acid
+        elif codon == 'GAT' or codon == 'GAC':
+            protein = protein + 'D' # Aspartic acid
+        elif codon == 'AAA' or codon == 'AAG':
+            protein = protein + 'K' # Lysine
+        elif codon2 = 'CG' or codon  == 'AGA' or codon == 'AGG':
+            protein = protein + 'R' # Arginine 
+
+    return protein
+
     pass
 
 
@@ -158,7 +289,7 @@ def gene_finder(dna):
         dna: a DNA sequence
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
-    # TODO: implement this
+    
     pass
 
 if __name__ == "__main__":
