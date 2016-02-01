@@ -123,7 +123,7 @@ def find_all_ORFs_oneframe(dna):
     new_dna = ''
     dna_list = []
     while index < len(dna) - 2:
-        codon = dna[index] + dna[index + 1] + dna[index + 2]
+        codon = dna[index: index + 3]
 
         if codon == 'ATG':
             new_dna = dna[index: len(dna)] #gets a string of dna that begins with a start codon and extends to the end of the dna string
@@ -309,4 +309,9 @@ def gene_finder(dna):
 
 if __name__ == "__main__":
     import doctest
+    doctest.run_docstring_examples(get_complement, globals(), verbose = True)
+    doctest.run_docstring_examples(get_reverse_complement, globals(), verbose = True)
+    doctest.run_docstring_examples(rest_of_ORF, globals(), verbose = True)
+    doctest.run_docstring_examples(find_all_ORFs_oneframe, globals(), verbose = True)
+    doctest.run_docstring_examples(find_all_ORFs, globals(), verbose = True)
     doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose = True)
