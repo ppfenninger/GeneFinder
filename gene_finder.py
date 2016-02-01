@@ -42,7 +42,6 @@ def get_complement(nucleotide):
         return 'G'
     else: # nucleotide == 'G'
         return 'C'
-    pass
 
 
 def get_reverse_complement(dna):
@@ -68,7 +67,6 @@ def get_reverse_complement(dna):
         reverse_dna = reverse_dna + dna2[index]
         index = index - 1
     return reverse_dna
-    pass
 
 
 def rest_of_ORF(dna):
@@ -101,7 +99,6 @@ def rest_of_ORF(dna):
         index = index + 3
     
     return dna #only happens if there is no stop codon 
-    pass
 
 
 def find_all_ORFs_oneframe(dna):
@@ -136,7 +133,6 @@ def find_all_ORFs_oneframe(dna):
             index = index + 3
 
     return dna_list
-    pass
 
 
 def find_all_ORFs(dna):
@@ -166,8 +162,6 @@ def find_all_ORFs(dna):
 
     return orf
 
-    pass
-
 
 def find_all_ORFs_both_strands(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence on both
@@ -188,7 +182,6 @@ def find_all_ORFs_both_strands(dna):
     orf.extend(find_all_ORFs(strand2)) # adds the ORF in strand two to the complete list of ORF
 
     return orf
-    pass
 
 
 def longest_ORF(dna):
@@ -206,7 +199,7 @@ def longest_ORF(dna):
             length = len(element)
 
     return longest
-    pass
+
 
 def longest_ORF_noncoding(dna, num_trials):
     """ Computes the maximum length of the longest ORF over num_trials shuffles
@@ -228,7 +221,6 @@ def longest_ORF_noncoding(dna, num_trials):
 
     return max_length
 
-    pass
 
 
 def coding_strand_to_AA(dna):
@@ -247,55 +239,77 @@ def coding_strand_to_AA(dna):
     """
     index = 0
     protein = ''
+    aF = ['TTT', 'TTC']
+    aL = ['TTA', 'TTG', 'CTT', 'CTC', 'CTA', 'CTG']
+    aI = ['ATT', 'ATC', 'ATA']
+    aM = ['ATG']
+    aV = ['GTT', 'GTC', 'GTA', 'GTG']
+    aS = ['TCT', 'TCC', 'TCA', 'TCG', 'AGT', 'AGC']
+    aP = ['CCT', 'CCC', 'CCA', 'CCG']
+    aT = ['ACT', 'ACC', 'ACA', 'ACG']
+    aA = ['GCT', 'GCC', 'GCA', 'GCG']
+    aY = ['TAT', 'TAC']
+    aH = ['CAT', 'CAC']
+    aQ = ['CAA', 'CAG']
+    aN = ['AAT', 'AAC']
+    aK = ['AAA', 'AAG']
+    aD = ['GAT', 'GAC']
+    aE = ['GAA', 'GAG']
+    aC = ['TGT', 'TGC']
+    aW = ['TGG']
+    aR = ['CGT', 'CGC', 'CGA', 'CGG', 'AGA', 'AGG']
+    aG = ['GGT', 'GGC', 'GGA', 'GGG']
 
-    while index > len(dna) - 2:
-        codon = dna[index] + dna[index + 1] + dna[index + 2]
-        codon2 = dna[index] + dna[index + 1]
+    while index < len(dna) - 2:
+        codon = dna[index: index + 3]
 
-        if codon == 'TTT' or codon == 'TTC':
+        if codon in aF:
             protein = protein + 'F' # Phenylalanine
-        elif codon == 'TTA' or codon == 'TTG' or codon == 'CTT' or codon == 'CTA' or codon == 'CTG' or codon == 'CTC':
+        elif codon in aL:
             protein = protein + 'L' # Leucine
-        elif codon == 'ATC' or codon == 'ATA' or codon == 'ATT':
+        elif codon in aI:
             protein = protein + 'I' # Isoleucine
-        elif codon == 'GTG' or codon == 'GTT' or codon == 'GTA' or codon == 'GTC':
+        elif codon in aV:
             protein = protein + 'V' # Valine
-        elif codon == 'ATG': 
+        elif codon in aM: 
             protein = protein + 'M' # Methionine (start codon)
-        elif codon == 'TGT' or codon == 'TGC':
+        elif codon in aC:
             protein = protein + 'C' # Cysteine
-        elif codon == 'GCT' or codon == 'GCC' or codon == 'GCA' or codon == 'GCG':
+        elif codon in aA:
             protein = protein + 'A' # Alanine
-        elif codon2 == 'GG':
-            protein = 'G' # Glycine
-        elif codon2 == 'CC':
+        elif codon in aG:
+            protein = protein + 'G' # Glycine
+        elif codon in aP:
             protein = protein + 'P' # Proline
-        elif codon2 == 'AC':
+        elif codon in aT:
             protein = protein + 'T' # Threonine
-        elif codon2 == 'TC' or codon == 'AGT' or codon == 'AGC':
+        elif codon in aS:
             protein = protein + 'S' # Serine
-        elif codon == 'TAT' or codon == 'TAC':
+        elif codon in aY:
             protein = protein + 'Y' # Tyrosine
-        elif codon == 'TGG':
+        elif codon in aW:
             protein = protein + 'W' # Tryptophan
-        elif codon == 'CAA' or codon == 'CAG':
+        elif codon in aQ:
             protein = protein + 'Q' # Glutamine
-        elif codon == 'AAT' or codon == 'AAC':
+        elif codon in aN:
             protein = protein + 'N' # Asparagine
-        elif codon == 'CAT' or codon == 'CAC':
+        elif codon in aH:
             protein = protein + 'H' # Histidine
-        elif codon == 'GAA' or codon == 'GAG':
+        elif codon in aE:
             protein = protein + 'E' # Glutamic acid
-        elif codon == 'GAT' or codon == 'GAC':
+        elif codon in aD:
             protein = protein + 'D' # Aspartic acid
-        elif codon == 'AAA' or codon == 'AAG':
+        elif codon in aK:
             protein = protein + 'K' # Lysine
-        elif codon2 == 'CG' or codon  == 'AGA' or codon == 'AGG':
+        elif codon in aR:
             protein = protein + 'R' # Arginine 
+        else:
+            protein = protein + '-'
+
+        index = index + 3
 
     return protein
 
-    pass
 
 
 def gene_finder(dna):
@@ -305,13 +319,28 @@ def gene_finder(dna):
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
     
-    pass
+    threshold = longest_ORF_noncoding(dna, 1500)
+    print threshold
 
-if __name__ == "__main__":
-    import doctest
-    doctest.run_docstring_examples(get_complement, globals(), verbose = True)
-    doctest.run_docstring_examples(get_reverse_complement, globals(), verbose = True)
-    doctest.run_docstring_examples(rest_of_ORF, globals(), verbose = True)
-    doctest.run_docstring_examples(find_all_ORFs_oneframe, globals(), verbose = True)
-    doctest.run_docstring_examples(find_all_ORFs, globals(), verbose = True)
-    doctest.run_docstring_examples(find_all_ORFs_both_strands, globals(), verbose = True)
+    orf_list = find_all_ORFs_both_strands(dna)
+    new_orf_list = []
+    protein = []
+
+    for i in range(0, len(orf_list)):
+        s = orf_list[i]
+        if len(s) >= threshold:
+            new_orf_list.append(s)
+            protein.append(coding_strand_to_AA(s))
+
+    
+    return protein
+
+
+from load import load_seq
+dna = load_seq("./data/X73525.fa")
+print gene_finder(dna)
+
+# if __name__ == "__main__":
+#     import doctest
+#     doctest.run_docstring_examples(longest_ORF, globals(), verbose = True)
+#     doctest.run_docstring_examples(coding_strand_to_AA, globals(), verbose = True)
